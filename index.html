@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PomadoroCat</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Title bar -->
+        <div class="title-bar">
+            <div class="title-bar-text">🐱 PomadoroCat</div>
+            <div class="title-bar-controls">
+                <button class="minimize-btn" id="minimizeBtn">─</button>
+                <button class="close-btn" id="closeBtn">×</button>
+            </div>
+        </div>
+
+        <!-- Main content -->
+        <div class="main-content">
+            <!-- Cat animation area -->
+            <div class="cat-container">
+                <div class="cat" id="cat">
+                    <div class="cat-face">
+                        <div class="cat-ears">
+                            <div class="ear left-ear"></div>
+                            <div class="ear right-ear"></div>
+                        </div>
+                        <div class="cat-eyes">
+                            <div class="eye left-eye"></div>
+                            <div class="eye right-eye"></div>
+                        </div>
+                        <div class="cat-nose"></div>
+                        <div class="cat-mouth"></div>
+                        <div class="cat-whiskers">
+                            <div class="whisker-group left-whiskers">
+                                <div class="whisker"></div>
+                                <div class="whisker"></div>
+                                <div class="whisker"></div>
+                            </div>
+                            <div class="whisker-group right-whiskers">
+                                <div class="whisker"></div>
+                                <div class="whisker"></div>
+                                <div class="whisker"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Timer display -->
+            <div class="timer-container">
+                <div class="timer-display">
+                    <div class="time" id="timeDisplay">25:00</div>
+                    <div class="timer-label" id="timerLabel">Work Time</div>
+                </div>
+                
+                <div class="progress-ring">
+                    <svg class="progress-ring-svg" width="200" height="200">
+                        <circle class="progress-ring-circle-bg" cx="100" cy="100" r="90"></circle>
+                        <circle class="progress-ring-circle" cx="100" cy="100" r="90" id="progressCircle"></circle>
+                    </svg>
+                </div>
+            </div>
+
+            <!-- Controls -->
+            <div class="controls">
+                <button class="control-btn primary" id="startBtn">Start</button>
+                <button class="control-btn secondary" id="pauseBtn" disabled>Pause</button>
+                <button class="control-btn secondary" id="resetBtn">Reset</button>
+            </div>
+
+            <!-- Session info -->
+            <div class="session-info">
+                <div class="session-counter">
+                    Session <span id="sessionCount">1</span> of <span id="totalSessions">4</span>
+                </div>
+                <div class="mode-indicator" id="modeIndicator">Work</div>
+            </div>
+
+            <!-- Settings button -->
+            <button class="settings-btn" id="settingsBtn">⚙️</button>
+        </div>
+
+        <!-- Settings modal -->
+        <div class="modal-overlay" id="settingsModal">
+            <div class="modal">
+                <div class="modal-header">
+                    <h3>Settings</h3>
+                    <button class="modal-close" id="closeSettings">×</button>
+                </div>
+                <div class="modal-content">
+                    <div class="setting-group">
+                        <label for="workTime">Work Time (minutes):</label>
+                        <input type="number" id="workTime" min="1" max="60" value="25">
+                    </div>
+                    <div class="setting-group">
+                        <label for="breakTime">Break Time (minutes):</label>
+                        <input type="number" id="breakTime" min="1" max="30" value="5">
+                    </div>
+                    <div class="setting-group">
+                        <label for="longBreakTime">Long Break Time (minutes):</label>
+                        <input type="number" id="longBreakTime" min="1" max="60" value="15">
+                    </div>
+                    <div class="setting-group">
+                        <label for="sessionsBeforeLongBreak">Sessions before Long Break:</label>
+                        <input type="number" id="sessionsBeforeLongBreak" min="1" max="10" value="4">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn secondary" id="cancelSettings">Cancel</button>
+                    <button class="btn primary" id="saveSettings">Save</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="renderer.js"></script>
+</body>
+</html> 

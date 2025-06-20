@@ -1,0 +1,12 @@
+This directory should contain the following icon files:
+
+1. icon.png - Main app icon (256x256 recommended)
+2. icon.ico - Windows icon file for the executable
+3. tray-icon.png - Small icon for system tray (16x16 or 32x32)
+
+For now, the app will work without these icons, but you may see default Electron icons.
+
+To add your own icons:
+- Create PNG files with the names above
+- Place them in this assets directory
+- The app will automatically use them when available 
