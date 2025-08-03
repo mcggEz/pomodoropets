@@ -3,85 +3,114 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PomadoroCat</title>
+    <title>PomadoroCats</title>
     <link rel="stylesheet" href="styles.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
     <div class="app-container">
         <!-- Title bar -->
         <div class="title-bar">
-            <div class="title-bar-text">🐱 PomadoroCat</div>
             <div class="title-bar-controls">
                 <button class="minimize-btn" id="minimizeBtn">─</button>
                 <button class="close-btn" id="closeBtn">×</button>
             </div>
         </div>
-
-        <!-- Main content -->
-        <div class="main-content">
-            <!-- Cat animation area -->
-            <div class="cat-container">
-                <div class="cat" id="cat">
-                    <div class="cat-face">
-                        <div class="cat-ears">
-                            <div class="ear left-ear"></div>
-                            <div class="ear right-ear"></div>
-                        </div>
-                        <div class="cat-eyes">
-                            <div class="eye left-eye"></div>
-                            <div class="eye right-eye"></div>
-                        </div>
-                        <div class="cat-nose"></div>
-                        <div class="cat-mouth"></div>
-                        <div class="cat-whiskers">
-                            <div class="whisker-group left-whiskers">
-                                <div class="whisker"></div>
-                                <div class="whisker"></div>
-                                <div class="whisker"></div>
-                            </div>
-                            <div class="whisker-group right-whiskers">
-                                <div class="whisker"></div>
-                                <div class="whisker"></div>
-                                <div class="whisker"></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+   
+        <!-- Logo -->
+        <div class="logo-container">
+            <div class="logo">
+                <span class="logo-icon">🐱</span>
+                <span class="logo-text">PomadoroCats</span>
             </div>
+        </div>
 
-            <!-- Timer display -->
-            <div class="timer-container">
-                <div class="timer-display">
-                    <div class="time" id="timeDisplay">25:00</div>
-                    <div class="timer-label" id="timerLabel">Work Time</div>
+        <!-- Main content grid -->
+        <div class="main-grid">
+            <!-- Large Timer Card -->
+            <div class="timer-card">
+                <div class="break-accumulated">
+                    Break Accumulated: <span id="breakAccumulated">0</span> mins
                 </div>
                 
-                <div class="progress-ring">
-                    <svg class="progress-ring-svg" width="200" height="200">
-                        <circle class="progress-ring-circle-bg" cx="100" cy="100" r="90"></circle>
-                        <circle class="progress-ring-circle" cx="100" cy="100" r="90" id="progressCircle"></circle>
-                    </svg>
+                <div class="timer-controls">
+                    <div class="control-icons">
+                        <i class="fas fa-cog settings-icon" id="settingsBtn"></i>
+                        <i class="fas fa-info-circle info-icon"></i>
+                    </div>
+                    
+                    <div class="timer-mode-toggle">
+                        <span class="toggle-label">Reverse</span>
+                        <div class="toggle-switch" id="timerModeToggle">
+                            <div class="toggle-slider"></div>
+                        </div>
+                        <span class="toggle-label active">Classic</span>
+                    </div>
+                </div>
+
+                <div class="timer-status">READY TO START</div>
+                
+                <div class="timer-display">
+                    <div class="time" id="timeDisplay">00:00</div>
+                    <div class="max-time">Current Max Time: <span id="maxTime">60:00</span></div>
+                </div>
+
+                <button class="start-button" id="startBtn">
+                    <i class="fas fa-play"></i>
+                    <span>Start</span>
+                </button>
+            </div>
+
+            <!-- Feature Cards -->
+            <div class="feature-cards">
+                <!-- Activity Card -->
+                <div class="feature-card">
+                    <i class="fas fa-lock card-icon"></i>
+                    <div class="card-title">ACTIVITY</div>
+                    <div class="card-description">Login to view your activity</div>
+                </div>
+
+                <!-- Calendar Card -->
+                <div class="feature-card">
+                    <i class="fas fa-lock card-icon"></i>
+                    <div class="card-title">CALENDAR</div>
+                    <div class="card-description">Login to view calendar</div>
+                </div>
+
+                <!-- Streaks Card -->
+                <div class="feature-card">
+                    <i class="fas fa-lock card-icon"></i>
+                    <div class="card-title">STREAKS</div>
+                    <div class="card-description">Login to track streaks</div>
+                </div>
+
+                <!-- Profile Card -->
+                <div class="feature-card profile-card">
+                    <div class="theme-toggle">
+                        <i class="fas fa-sun"></i>
+                        <div class="toggle-switch" id="themeToggle">
+                            <div class="toggle-slider"></div>
+                        </div>
+                        <i class="fas fa-moon"></i>
+                    </div>
+                    
+                    <i class="fas fa-user card-icon"></i>
+                    <div class="card-title">PROFILE</div>
+                    <div class="card-description">Sign in to save your progress</div>
+                    
+                    <button class="sign-in-button">
+                        <i class="fas fa-arrow-right"></i>
+                        <span>Sign In</span>
+                    </button>
                 </div>
             </div>
+        </div>
 
-            <!-- Controls -->
-            <div class="controls">
-                <button class="control-btn primary" id="startBtn">Start</button>
-                <button class="control-btn secondary" id="pauseBtn" disabled>Pause</button>
-                <button class="control-btn secondary" id="resetBtn">Reset</button>
-            </div>
-
-            <!-- Session info -->
-            <div class="session-info">
-                <div class="session-counter">
-                    Session <span id="sessionCount">1</span> of <span id="totalSessions">4</span>
-                </div>
-                <div class="mode-indicator" id="modeIndicator">Work</div>
-            </div>
-
-            <!-- Settings button -->
-            <button class="settings-btn" id="settingsBtn">⚙️</button>
+        <!-- Footer -->
+        <div class="footer">
+            <a href="#" class="footer-link">Privacy</a>
+            <a href="#" class="footer-link">Terms</a>
         </div>
 
         <!-- Settings modal -->
@@ -107,6 +136,22 @@
                     <div class="setting-group">
                         <label for="sessionsBeforeLongBreak">Sessions before Long Break:</label>
                         <input type="number" id="sessionsBeforeLongBreak" min="1" max="10" value="4">
+                    </div>
+                    <div class="setting-group">
+                        <label for="catTheme">Pet Appearance:</label>
+                        <select id="catTheme">
+                            <option value="chubby-gray">Chubby Gray Pet</option>
+                            <option value="pixel-calico">Pixel Art Calico</option>
+                        </select>
+                    </div>
+                    <div class="setting-group">
+                        <label for="petType">Pet Type:</label>
+                        <select id="petType">
+                            <option value="cat">🐱 Cat</option>
+                            <option value="dog">🐕 Dog</option>
+                            <option value="bird">🐦 Bird</option>
+                            <option value="rabbit">🐰 Rabbit</option>
+                        </select>
                     </div>
                 </div>
                 <div class="modal-footer">

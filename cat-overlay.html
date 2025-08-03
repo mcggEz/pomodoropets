@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PomadoroPet Overlay</title>
+    <link rel="stylesheet" href="cat-overlay.css">
+</head>
+<body>
+    <div class="pet-overlay-container">
+        <div class="pet" id="overlayPet">
+            <!-- Cat structure -->
+            <div class="cat pet-variant" id="overlayCatVariant">
+                <div class="cat-ears">
+                    <div class="ear left-ear"></div>
+                    <div class="ear right-ear"></div>
+                </div>
+                <div class="cat-eyes">
+                    <div class="eye left-eye"></div>
+                    <div class="eye right-eye"></div>
+                </div>
+                <div class="cat-cheeks">
+                    <div class="cheek left-cheek"></div>
+                    <div class="cheek right-cheek"></div>
+                </div>
+                <div class="cat-mouth"></div>
+                <div class="cat-legs">
+                    <div class="cat-leg"></div>
+                    <div class="cat-leg"></div>
+                </div>
+                <div class="cat-tail"></div>
+            </div>
+            
+            <!-- Dog structure -->
+            <div class="dog pet-variant" id="overlayDogVariant" style="display: none;">
+                <div class="dog-ears">
+                    <div class="dog-ear left-ear"></div>
+                    <div class="dog-ear right-ear"></div>
+                </div>
+                <div class="dog-eyes">
+                    <div class="dog-eye left-eye"></div>
+                    <div class="dog-eye right-eye"></div>
+                </div>
+                <div class="dog-nose"></div>
+                <div class="dog-mouth"></div>
+                <div class="dog-legs">
+                    <div class="dog-leg"></div>
+                    <div class="dog-leg"></div>
+                </div>
+                <div class="dog-tail"></div>
+            </div>
+            
+            <!-- Bird structure -->
+            <div class="bird pet-variant" id="overlayBirdVariant" style="display: none;">
+                <div class="bird-head"></div>
+                <div class="bird-beak"></div>
+                <div class="bird-eye"></div>
+                <div class="bird-wings">
+                    <div class="bird-wing left-wing"></div>
+                    <div class="bird-wing right-wing"></div>
+                </div>
+                <div class="bird-body"></div>
+                <div class="bird-feet">
+                    <div class="bird-foot"></div>
+                    <div class="bird-foot"></div>
+                </div>
+            </div>
+            
+            <!-- Rabbit structure -->
+            <div class="rabbit pet-variant" id="overlayRabbitVariant" style="display: none;">
+                <div class="rabbit-ears">
+                    <div class="rabbit-ear left-ear"></div>
+                    <div class="rabbit-ear right-ear"></div>
+                </div>
+                <div class="rabbit-face"></div>
+                <div class="rabbit-eyes">
+                    <div class="rabbit-eye left-eye"></div>
+                    <div class="rabbit-eye right-eye"></div>
+                </div>
+                <div class="rabbit-nose"></div>
+                <div class="rabbit-mouth"></div>
+                <div class="rabbit-body"></div>
+                <div class="rabbit-legs">
+                    <div class="rabbit-leg"></div>
+                    <div class="rabbit-leg"></div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Timer display -->
+        <div class="overlay-timer" id="overlayTimer"></div>
+
+        <!-- Close button -->
+        <button class="close-overlay-btn" id="closeOverlayBtn">×</button>
+    </div>
+
+    <script src="cat-overlay.js"></script>
+</body>
+</html> 

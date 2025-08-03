@@ -13,6 +13,9 @@ class PomodoroTimer {
         this.currentMode = 'work'; // 'work', 'break', 'longBreak'
         this.sessionCount = 1;
         this.timer = null;
+        this.breakAccumulated = 0; // Track accumulated break time
+        this.isReverseMode = false; // Track timer mode
+        this.isDarkMode = false; // Track theme mode
         
         this.initializeElements();
         this.bindEvents();
@@ -22,15 +25,11 @@ class PomodoroTimer {
     
     initializeElements() {
         this.timeDisplay = document.getElementById('timeDisplay');
-        this.timerLabel = document.getElementById('timerLabel');
+        this.maxTimeDisplay = document.getElementById('maxTime');
+        this.breakAccumulatedDisplay = document.getElementById('breakAccumulated');
         this.startBtn = document.getElementById('startBtn');
-        this.pauseBtn = document.getElementById('pauseBtn');
-        this.resetBtn = document.getElementById('resetBtn');
-        this.sessionCountEl = document.getElementById('sessionCount');
-        this.totalSessionsEl = document.getElementById('totalSessions');
-        this.modeIndicator = document.getElementById('modeIndicator');
-        this.progressCircle = document.getElementById('progressCircle');
-        this.cat = document.getElementById('cat');
+        this.timerModeToggle = document.getElementById('timerModeToggle');
+        this.themeToggle = document.getElementById('themeToggle');
         this.settingsBtn = document.getElementById('settingsBtn');
         this.settingsModal = document.getElementById('settingsModal');
         this.closeSettings = document.getElementById('closeSettings');
@@ -44,12 +43,14 @@ class PomodoroTimer {
         this.breakTimeInput = document.getElementById('breakTime');
         this.longBreakTimeInput = document.getElementById('longBreakTime');
         this.sessionsBeforeLongBreakInput = document.getElementById('sessionsBeforeLongBreak');
+        this.catThemeInput = document.getElementById('catTheme');
+        this.petTypeInput = document.getElementById('petType');
     }
     
     bindEvents() {
-        this.startBtn.addEventListener('click', () => this.startTimer());
-        this.pauseBtn.addEventListener('click', () => this.pauseTimer());
-        this.resetBtn.addEventListener('click', () => this.resetTimer());
+        this.startBtn.addEventListener('click', () => this.toggleTimer());
+        this.timerModeToggle.addEventListener('click', () => this.toggleTimerMode());
+        this.themeToggle.addEventListener('click', () => this.toggleTheme());
         this.settingsBtn.addEventListener('click', () => this.openSettings());
         this.closeSettings.addEventListener('click', () => this.closeSettingsModal());
         this.cancelSettings.addEventListener('click', () => this.closeSettingsModal());
@@ -60,6 +61,7 @@ class PomodoroTimer {
         // IPC listeners
         ipcRenderer.on('start-timer', () => this.startTimer());
         ipcRenderer.on('pause-timer', () => this.pauseTimer());
+        ipcRenderer.on('settings-updated', () => this.loadSettings());
     }
     
     async loadSettings() {
@@ -83,7 +85,9 @@ class PomodoroTimer {
                 workTime: parseInt(this.workTimeInput.value),
                 breakTime: parseInt(this.breakTimeInput.value),
                 longBreakTime: parseInt(this.longBreakTimeInput.value),
-                sessionsBeforeLongBreak: parseInt(this.sessionsBeforeLongBreakInput.value)
+                sessionsBeforeLongBreak: parseInt(this.sessionsBeforeLongBreakInput.value),
+                catTheme: this.catThemeInput.value,
+                petType: this.petTypeInput.value
             };
             
             await ipcRenderer.invoke('save-settings', settings);
@@ -101,23 +105,33 @@ class PomodoroTimer {
         }
     }
     
+    toggleTimer() {
+        if (this.isRunning) {
+            this.pauseTimer();
+        } else {
+            this.startTimer();
+        }
+    }
+    
     startTimer() {
         if (!this.isRunning) {
             this.isRunning = true;
             this.isPaused = false;
-            this.startBtn.disabled = true;
-            this.pauseBtn.disabled = false;
             
             this.timer = setInterval(() => {
-                this.currentTime--;
+                if (this.isReverseMode) {
+                    this.currentTime++;
+                } else {
+                    this.currentTime--;
+                }
                 this.updateDisplay();
                 
-                if (this.currentTime <= 0) {
+                if (!this.isReverseMode && this.currentTime <= 0) {
                     this.timerComplete();
                 }
             }, 1000);
             
-            this.updateCatAnimation();
+            this.updateTimerState();
         }
     }
     
@@ -125,21 +139,17 @@ class PomodoroTimer {
         if (this.isRunning) {
             this.isRunning = false;
             this.isPaused = true;
-            this.startBtn.disabled = false;
-            this.pauseBtn.disabled = true;
             
             clearInterval(this.timer);
             this.timer = null;
             
-            this.updateCatAnimation();
+            this.updateTimerState();
         }
     }
     
     resetTimer() {
         this.isRunning = false;
         this.isPaused = false;
-        this.startBtn.disabled = false;
-        this.pauseBtn.disabled = true;
         
         clearInterval(this.timer);
         this.timer = null;
@@ -154,7 +164,7 @@ class PomodoroTimer {
         }
         
         this.updateDisplay();
-        this.updateCatAnimation();
+        this.updateTimerState();
     }
     
     timerComplete() {
@@ -178,86 +188,91 @@ class PomodoroTimer {
                 this.currentTime = this.breakTime;
             }
         } else {
+            // Add break time to accumulated breaks
+            if (this.currentMode === 'break') {
+                this.breakAccumulated += this.breakTime;
+            } else if (this.currentMode === 'longBreak') {
+                this.breakAccumulated += this.longBreakTime;
+            }
+            
             this.currentMode = 'work';
             this.currentTime = this.workTime;
         }
         
         this.updateDisplay();
-        this.updateCatAnimation();
-        this.startBtn.disabled = false;
-        this.pauseBtn.disabled = true;
+        this.updateTimerState();
     }
     
     updateDisplay() {
         const minutes = Math.floor(this.currentTime / 60);
         const seconds = this.currentTime % 60;
-        this.timeDisplay.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        const timeString = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
         
-        // Update timer label
+        // Add animation class for smooth updates
+        this.timeDisplay.classList.add('updating');
+        setTimeout(() => this.timeDisplay.classList.remove('updating'), 300);
+        
+        this.timeDisplay.textContent = timeString;
+
+        // Update max time display
+        let maxTime;
         if (this.currentMode === 'work') {
-            this.timerLabel.textContent = 'Work Time';
-            this.modeIndicator.textContent = 'Work';
-            this.modeIndicator.style.background = '#e8f5e8';
-            this.modeIndicator.style.color = '#27ae60';
+            maxTime = this.workTime;
         } else if (this.currentMode === 'break') {
-            this.timerLabel.textContent = 'Break Time';
-            this.modeIndicator.textContent = 'Break';
-            this.modeIndicator.style.background = '#fff3cd';
-            this.modeIndicator.style.color = '#856404';
+            maxTime = this.breakTime;
         } else {
-            this.timerLabel.textContent = 'Long Break';
-            this.modeIndicator.textContent = 'Long Break';
-            this.modeIndicator.style.background = '#d1ecf1';
-            this.modeIndicator.style.color = '#0c5460';
+            maxTime = this.longBreakTime;
         }
         
-        // Update session counter
-        this.sessionCountEl.textContent = this.sessionCount;
-        this.totalSessionsEl.textContent = this.sessionsBeforeLongBreak;
+        const maxMinutes = Math.floor(maxTime / 60);
+        const maxSeconds = maxTime % 60;
+        this.maxTimeDisplay.textContent = `${maxMinutes.toString().padStart(2, '0')}:${maxSeconds.toString().padStart(2, '0')}`;
         
-        // Update progress ring
-        this.updateProgressRing();
+        // Update break accumulated display
+        const breakMinutes = Math.floor(this.breakAccumulated / 60);
+        this.breakAccumulatedDisplay.textContent = breakMinutes;
     }
     
-    updateProgressRing() {
-        let totalTime, currentProgress;
-        
-        if (this.currentMode === 'work') {
-            totalTime = this.workTime;
-            currentProgress = this.workTime - this.currentTime;
-        } else if (this.currentMode === 'break') {
-            totalTime = this.breakTime;
-            currentProgress = this.breakTime - this.currentTime;
-        } else {
-            totalTime = this.longBreakTime;
-            currentProgress = this.longBreakTime - this.currentTime;
-        }
-        
-        const progress = currentProgress / totalTime;
-        const circumference = 2 * Math.PI * 90;
-        const offset = circumference - (progress * circumference);
-        
-        this.progressCircle.style.strokeDashoffset = offset;
-        
-        // Change progress ring color based on mode
-        if (this.currentMode === 'work') {
-            this.progressCircle.style.stroke = '#27ae60';
-        } else if (this.currentMode === 'break') {
-            this.progressCircle.style.stroke = '#f39c12';
-        } else {
-            this.progressCircle.style.stroke = '#3498db';
-        }
-    }
-    
-    updateCatAnimation() {
-        this.cat.className = 'cat';
+    updateTimerState() {
+        const timerCard = document.querySelector('.timer-card');
+        const startButton = this.startBtn;
+        const startIcon = startButton.querySelector('i');
+        const startText = startButton.querySelector('span');
         
         if (this.isRunning) {
-            if (this.currentMode === 'work') {
-                this.cat.classList.add('working');
-            } else {
-                this.cat.classList.add('break');
-            }
+            timerCard.classList.add('running');
+            startIcon.className = 'fas fa-pause';
+            startText.textContent = 'Pause';
+        } else {
+            timerCard.classList.remove('running');
+            startIcon.className = 'fas fa-play';
+            startText.textContent = 'Start';
+        }
+    }
+    
+    toggleTimerMode() {
+        this.isReverseMode = !this.isReverseMode;
+        this.timerModeToggle.classList.toggle('active', this.isReverseMode);
+        
+        // Update labels
+        const labels = document.querySelectorAll('.toggle-label');
+        labels.forEach(label => label.classList.remove('active'));
+        
+        if (this.isReverseMode) {
+            labels[0].classList.add('active'); // "Reverse" label
+        } else {
+            labels[1].classList.add('active'); // "Classic" label
+        }
+    }
+    
+    toggleTheme() {
+        this.isDarkMode = !this.isDarkMode;
+        this.themeToggle.classList.toggle('active', this.isDarkMode);
+        
+        if (this.isDarkMode) {
+            document.body.classList.add('dark-mode');
+        } else {
+            document.body.classList.remove('dark-mode');
         }
     }
     
@@ -267,6 +282,8 @@ class PomodoroTimer {
         this.breakTimeInput.value = Math.floor(this.breakTime / 60);
         this.longBreakTimeInput.value = Math.floor(this.longBreakTime / 60);
         this.sessionsBeforeLongBreakInput.value = this.sessionsBeforeLongBreak;
+        this.catThemeInput.value = 'chubby-gray'; // Default theme
+        this.petTypeInput.value = 'cat'; // Default pet type
         
         this.settingsModal.classList.add('show');
     }
